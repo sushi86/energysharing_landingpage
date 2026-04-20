@@ -65,6 +65,23 @@ export function EnergyFlowAnimation() {
         <polygon points="80,180 150,130 220,180" fill="var(--color-primary-dark)" />
         <rect x="90" y="180" width="120" height="70" fill="var(--color-primary-pale)" />
         <rect x="135" y="210" width="20" height="40" fill="var(--color-primary-dark)" />
+        {/* Solar panels on left roof slope.
+            Roof slope: (80,180)→(150,130), length ~86, angle -35.54°.
+            Local frame: x runs along slope (0..86), y is perpendicular (negative = above the roof surface). */}
+        <g transform="translate(80 180) rotate(-35.54)">
+          <rect x="4" y="-14" width="78" height="14" fill="#1e293b" />
+          {[0, 1, 2, 3].map((i) => (
+            <rect
+              key={i}
+              x={6 + i * 19}
+              y={-12}
+              width={17}
+              height={10}
+              fill="#3b82f6"
+              opacity="0.9"
+            />
+          ))}
+        </g>
         {/* House 1 stub to cable */}
         <line
           x1="150"
