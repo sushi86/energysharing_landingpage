@@ -15,14 +15,14 @@ export function HeroSection() {
         className="object-cover"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/70 via-primary-dark/55 to-primary-dark/75" />
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/85 via-primary-dark/70 to-primary-dark/85" />
 
       <div className="relative mx-auto flex min-h-[90vh] max-w-content flex-col justify-center px-6 py-24 text-white md:py-32">
         <div className="mb-8">
           <Badge>Pilotprojekt Chattengau · 2026</Badge>
         </div>
 
-        <h1 className="font-serif text-white">
+        <h1 className="font-serif text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.35)]">
           Sonnenstrom aus der Nachbarschaft.
         </h1>
 
