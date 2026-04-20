@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Energy Sharing Landingpage Chattengau
 
-## Getting Started
+Next.js 14 Landing Page für das Energy-Sharing-Pilotprojekt in Niedenstein / Chattengau (Nordhessen).
 
-First, run the development server:
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.local.example .env.local
+# Edit .env.local and replace all [PLATZHALTER] values
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Platzhalter vor Deploy ersetzen
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Vor dem Deploy müssen folgende Stellen angepasst werden:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `.env.local` — `RESEND_API_KEY`, `WAITLIST_TO_EMAIL`, `WAITLIST_FROM_EMAIL`
+- `app/impressum/page.tsx` — Kontakt-E-Mail
+- `app/datenschutz/page.tsx` — Kontakt-E-Mail
+- `components/sections/Footer.tsx` — Kontakt-E-Mail
 
-## Learn More
+Suche im Repo nach `[PLATZHALTER]`, um alle Stellen zu finden:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+grep -rn "\[PLATZHALTER\]" app components
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Für eigenen Node-Server:
 
-## Deploy on Vercel
+```bash
+pnpm build
+pnpm start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Der In-Memory-Rate-Limiter setzt den Zähler nach jedem Server-Neustart zurück — das ist für diesen Use-Case akzeptabel.
