@@ -113,6 +113,38 @@ export function EnergyFlowAnimation() {
         />
       </g>
 
+      {/* Heat pump against House 2's left wall */}
+      <g>
+        <rect
+          x="285"
+          y="225"
+          width="30"
+          height="25"
+          rx="2"
+          fill="var(--color-muted)"
+        />
+        <circle cx="300" cy="237" r="8" fill="var(--color-primary-pale)" />
+        <circle cx="300" cy="237" r="2" fill="var(--color-muted)" />
+        {/* Heat waves */}
+        {[0, 1, 2].map((i) => (
+          <motion.path
+            key={i}
+            d={`M ${290 + i * 5} 220 q 2 -4 4 0 q 2 4 4 0`}
+            stroke="var(--color-sun)"
+            strokeWidth="1.5"
+            fill="none"
+            strokeLinecap="round"
+            animate={{ opacity: [0, 0.8, 0], y: [0, -6, -12] }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: i * 0.4,
+              ease: "easeOut",
+            }}
+          />
+        ))}
+      </g>
+
       {/* Grid marker (public grid exit) */}
       <g>
         <circle cx="585" cy="265" r="14" fill="var(--color-muted)" />
