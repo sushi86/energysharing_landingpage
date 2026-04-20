@@ -52,7 +52,7 @@ export function AustriaSection() {
             </div>
             <div className="p-8 md:p-12">
               <blockquote className="font-serif text-xl leading-snug text-primary-dark md:text-2xl">
-                „Was in Österreich funktioniert, funktioniert auch bei uns — wir wollen Niedenstein zu einem der ersten Orte in Nordhessen machen."
+                „Was in Österreich funktioniert, funktioniert auch bei uns — wir wollen Niedenstein zu einem der ersten Orte in Nordhessen machen.“
               </blockquote>
             </div>
           </div>

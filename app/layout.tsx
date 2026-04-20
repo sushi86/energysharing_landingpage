@@ -25,7 +25,12 @@ export const metadata: Metadata = {
       "Pilotprojekt: Solarstrom lokal teilen statt anonym einspeisen.",
     type: "website",
     locale: "de_DE",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Energy Sharing Niedenstein",
+    description:
+      "Pilotprojekt: Solarstrom lokal teilen statt anonym einspeisen.",
   },
   robots: { index: true, follow: true },
 };
