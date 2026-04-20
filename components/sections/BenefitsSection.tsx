@@ -1,7 +1,7 @@
 import { SectionReveal } from "@/components/ui/SectionReveal";
 
 const PRODUCER_BENEFITS = [
-  "Mehr Erlös als EEG-Einspeisung (aktuell nur ~7,8 Cent/kWh)",
+  "Deutlich mehr Erlös als die EEG-Einspeisung (aktuell nur ~6,8 Cent/kWh — und mit der geplanten EEG-Novelle bald womöglich gar nichts mehr)",
   "Dein Strom bleibt im Ort — statt anonym ins Netz",
   "Kein Aufwand — die Plattform übernimmt die Abrechnung",
   "Flexibel: du bestimmst den Preis selbst",
