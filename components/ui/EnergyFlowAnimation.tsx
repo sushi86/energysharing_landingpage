@@ -48,17 +48,32 @@ export function EnergyFlowAnimation() {
         opacity="0.3"
       />
 
-      {/* Underground cable (dashed) */}
-      <line
-        x1="30"
-        y1="265"
-        x2="573"
-        y2="265"
-        stroke="var(--color-muted)"
-        strokeWidth="3"
-        strokeDasharray="6 4"
-        strokeLinecap="round"
-      />
+      {/* Underground cable: dashed base + animated flow overlay */}
+      <g>
+        <line
+          x1="30"
+          y1="265"
+          x2="573"
+          y2="265"
+          stroke="var(--color-muted)"
+          strokeWidth="3"
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+        />
+        <motion.line
+          x1="30"
+          y1="265"
+          x2="573"
+          y2="265"
+          stroke="var(--color-sun)"
+          strokeWidth="3"
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          opacity="0.4"
+          animate={{ strokeDashoffset: [0, -20] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        />
+      </g>
 
       {/* House 1: solar producer */}
       <g>
@@ -215,6 +230,49 @@ export function EnergyFlowAnimation() {
           fill="var(--color-primary-pale)"
         />
       </g>
+
+      {/* Particle streams: solar roof → cable → consumers / grid */}
+      {(
+        [
+          {
+            path: "M 108 151 L 150 250 L 150 265 L 300 265 L 300 240",
+            count: 3,
+            duration: 4,
+            delayBase: 0,
+          },
+          {
+            path: "M 108 151 L 150 250 L 150 265 L 465 265 L 465 235",
+            count: 3,
+            duration: 4,
+            delayBase: 0.6,
+          },
+          {
+            path: "M 108 151 L 150 250 L 150 265 L 585 265",
+            count: 1,
+            duration: 6,
+            delayBase: 2,
+          },
+        ] as const
+      ).map((stream, streamIdx) =>
+        Array.from({ length: stream.count }).map((_, i) => (
+          <motion.circle
+            key={`${streamIdx}-${i}`}
+            r="5"
+            fill="var(--color-sun)"
+            initial={{ offsetDistance: "0%" }}
+            animate={{ offsetDistance: "100%" }}
+            transition={{
+              duration: stream.duration,
+              repeat: Infinity,
+              ease: "linear",
+              delay: stream.delayBase + (i * stream.duration) / stream.count,
+            }}
+            style={{
+              offsetPath: `path('${stream.path}')`,
+            }}
+          />
+        ))
+      )}
     </svg>
   );
 }
