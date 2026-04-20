@@ -26,34 +26,35 @@ export function HeroSection() {
           Sonnenstrom aus der Nachbarschaft.
         </h1>
 
-        <div className="mt-8 grid gap-4 text-lg md:grid-cols-2 md:text-xl">
-          <p className="flex items-start gap-3">
-            <span aria-hidden className="text-2xl">☀️</span>
-            <span>
-              <strong>Mit PV-Anlage:</strong> mehr Erlös als bisher — dein Strom bleibt im Ort.
-            </span>
-          </p>
-          <p className="flex items-start gap-3">
-            <span aria-hidden className="text-2xl">⚡</span>
-            <span>
-              <strong>Ohne PV-Anlage:</strong> günstigerer Strom direkt vom Nachbarn.
-            </span>
-          </p>
-        </div>
-
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <Link
-            href="#warteliste?role=producer"
-            className="inline-flex min-h-[52px] items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-primary-dark focus:outline-none focus:ring-4 focus:ring-primary-light/60"
-          >
-            Ich habe eine Solaranlage →
-          </Link>
-          <Link
-            href="#warteliste?role=consumer"
-            className="inline-flex min-h-[52px] items-center justify-center rounded-lg bg-primary-light px-6 py-3 text-base font-semibold text-primary-dark shadow-lg transition hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-pale/80"
-          >
-            Ich möchte günstigeren Strom →
-          </Link>
+        <div className="mt-8 grid gap-8 text-lg md:grid-cols-2 md:gap-10 md:text-xl">
+          <div className="flex flex-col gap-5">
+            <p className="flex items-start gap-3">
+              <span aria-hidden className="text-2xl">☀️</span>
+              <span>
+                <strong>Mit PV-Anlage:</strong> mehr Erlös als bisher — dein Strom bleibt im Ort.
+              </span>
+            </p>
+            <Link
+              href="#warteliste?role=producer"
+              className="inline-flex min-h-[52px] w-full items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-primary-dark focus:outline-none focus:ring-4 focus:ring-primary-light/60 sm:w-auto sm:self-start"
+            >
+              Ich habe eine Solaranlage →
+            </Link>
+          </div>
+          <div className="flex flex-col gap-5">
+            <p className="flex items-start gap-3">
+              <span aria-hidden className="text-2xl">⚡</span>
+              <span>
+                <strong>Ohne PV-Anlage:</strong> günstigerer Strom direkt vom Nachbarn.
+              </span>
+            </p>
+            <Link
+              href="#warteliste?role=consumer"
+              className="inline-flex min-h-[52px] w-full items-center justify-center rounded-lg bg-primary-light px-6 py-3 text-base font-semibold text-primary-dark shadow-lg transition hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-pale/80 sm:w-auto sm:self-start"
+            >
+              Ich möchte günstigeren Strom →
+            </Link>
+          </div>
         </div>
 
         <p className="mt-6 max-w-xl text-sm text-white/85">
