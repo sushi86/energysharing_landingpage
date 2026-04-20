@@ -145,6 +145,68 @@ export function EnergyFlowAnimation() {
         ))}
       </g>
 
+      {/* EV charging next to House 2 */}
+      <g>
+        {/* Charging cable from house wall to car charge port */}
+        <path
+          d="M 440 232 Q 450 244 462 232"
+          stroke="var(--color-muted)"
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+        />
+        {/* Car body */}
+        <rect
+          x="460"
+          y="225"
+          width="70"
+          height="18"
+          rx="4"
+          fill="var(--color-primary-dark)"
+        />
+        {/* Car cabin */}
+        <path
+          d="M 472 225 L 480 213 L 512 213 L 520 225 Z"
+          fill="var(--color-primary-dark)"
+        />
+        {/* Windows */}
+        <path
+          d="M 478 223 L 483 215 L 495 215 L 495 223 Z"
+          fill="var(--color-primary-pale)"
+        />
+        <path
+          d="M 497 223 L 497 215 L 509 215 L 514 223 Z"
+          fill="var(--color-primary-pale)"
+        />
+        {/* Wheels */}
+        <circle cx="475" cy="245" r="6" fill="#1e293b" />
+        <circle cx="515" cy="245" r="6" fill="#1e293b" />
+        {/* Battery indicator on roof */}
+        <rect
+          x="483"
+          y="207"
+          width="24"
+          height="5"
+          rx="1"
+          fill="none"
+          stroke="var(--color-muted)"
+          strokeWidth="1"
+        />
+        <rect x="508" y="208.5" width="1.5" height="2" fill="var(--color-muted)" />
+        <motion.rect
+          x="484"
+          y="208"
+          height="3"
+          fill="var(--color-sun)"
+          animate={{ width: [0, 22] }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      </g>
+
       {/* Grid marker (public grid exit) */}
       <g>
         <circle cx="585" cy="265" r="14" fill="var(--color-muted)" />
