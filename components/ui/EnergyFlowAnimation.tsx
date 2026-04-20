@@ -8,7 +8,7 @@ export function EnergyFlowAnimation() {
       viewBox="0 0 600 280"
       className="w-full max-w-2xl"
       role="img"
-      aria-label="Schaubild: Solarstrom fließt vom Haus mit Solaranlage zum Nachbarshaus und ins Netz"
+      aria-label="Schaubild: Solarstrom fließt vom Haus mit Solaranlage durch das Stromnetz zum Nachbarhaus und versorgt dort Wärmepumpe und Elektroauto; Überschuss geht ins öffentliche Netz."
     >
       {/* Sun */}
       <motion.g
@@ -37,62 +37,73 @@ export function EnergyFlowAnimation() {
         })}
       </motion.g>
 
+      {/* Ground line */}
+      <line
+        x1="0"
+        y1="250"
+        x2="600"
+        y2="250"
+        stroke="var(--color-muted)"
+        strokeWidth="1"
+        opacity="0.3"
+      />
+
+      {/* Underground cable (dashed) */}
+      <line
+        x1="30"
+        y1="265"
+        x2="573"
+        y2="265"
+        stroke="var(--color-muted)"
+        strokeWidth="3"
+        strokeDasharray="6 4"
+        strokeLinecap="round"
+      />
+
       {/* House 1: solar producer */}
       <g>
         <polygon points="80,180 150,130 220,180" fill="var(--color-primary-dark)" />
         <rect x="90" y="180" width="120" height="70" fill="var(--color-primary-pale)" />
-        <rect x="100" y="140" width="90" height="38" fill="#1e293b" transform="skewX(-30)" />
-        {[0, 1, 2, 3].map((i) => (
-          <rect
-            key={i}
-            x={60 + i * 22}
-            y={144}
-            width={18}
-            height={30}
-            fill="#3b82f6"
-            transform="skewX(-30)"
-            opacity="0.85"
-          />
-        ))}
         <rect x="135" y="210" width="20" height="40" fill="var(--color-primary-dark)" />
-      </g>
-
-      {/* House 2: neighbor */}
-      <g>
-        <polygon points="340,180 410,130 480,180" fill="var(--color-primary-dark)" />
-        <rect x="350" y="180" width="120" height="70" fill="var(--color-primary-pale)" />
-        <rect x="395" y="210" width="20" height="40" fill="var(--color-primary-dark)" />
-        <rect x="365" y="195" width="18" height="18" fill="#fef3e2" />
-        <rect x="440" y="195" width="18" height="18" fill="#fef3e2" />
-      </g>
-
-      {/* Grid pylon */}
-      <g>
-        <line x1="550" y1="110" x2="550" y2="250" stroke="var(--color-muted)" strokeWidth="4" />
-        <line x1="520" y1="140" x2="580" y2="140" stroke="var(--color-muted)" strokeWidth="4" />
-        <line x1="525" y1="170" x2="575" y2="170" stroke="var(--color-muted)" strokeWidth="4" />
-        <line x1="530" y1="200" x2="570" y2="200" stroke="var(--color-muted)" strokeWidth="4" />
-      </g>
-
-      {/* Particles */}
-      {[0, 1, 2, 3].map((i) => (
-        <motion.circle
-          key={i}
-          r="6"
-          fill="var(--color-sun)"
-          initial={{ offsetDistance: "0%" }}
-          animate={{ offsetDistance: "100%" }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "linear",
-            delay: i * 1,
-          }}
-          style={{
-            offsetPath: "path('M 150 170 Q 280 100 410 170 Q 480 200 550 170')",
-          }}
+        {/* House 1 stub to cable */}
+        <line
+          x1="150"
+          y1="250"
+          x2="150"
+          y2="265"
+          stroke="var(--color-muted)"
+          strokeWidth="3"
+          strokeLinecap="round"
         />
-      ))}
+      </g>
+
+      {/* House 2: neighbor / consumer */}
+      <g>
+        <polygon points="310,180 380,130 450,180" fill="var(--color-primary-dark)" />
+        <rect x="320" y="180" width="120" height="70" fill="var(--color-primary-pale)" />
+        <rect x="365" y="210" width="20" height="40" fill="var(--color-primary-dark)" />
+        <rect x="335" y="195" width="18" height="18" fill="#fef3e2" />
+        <rect x="410" y="195" width="18" height="18" fill="#fef3e2" />
+        {/* House 2 stub to cable */}
+        <line
+          x1="380"
+          y1="250"
+          x2="380"
+          y2="265"
+          stroke="var(--color-muted)"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </g>
+
+      {/* Grid marker (public grid exit) */}
+      <g>
+        <circle cx="585" cy="265" r="14" fill="var(--color-muted)" />
+        <path
+          d="M 587 258 L 581 266 L 585 266 L 583 272 L 589 264 L 585 264 Z"
+          fill="var(--color-primary-pale)"
+        />
+      </g>
     </svg>
   );
 }
