@@ -43,8 +43,8 @@ export function AustriaSection() {
           <div className="mt-12 overflow-hidden rounded-2xl bg-white shadow-sm md:grid md:grid-cols-2">
             <div className="relative h-56 md:h-auto">
               <Image
-                src="https://images.unsplash.com/photo-1609430351352-a5ca61c6c80b?auto=format&fit=crop&w=1200&q=80"
-                alt="Österreichisches Alpendorf mit Solaranlagen auf den Dächern"
+                src="/austria.png"
+                alt="Österreich als Vorbild für Energy Sharing"
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
                 className="object-cover"
