@@ -235,13 +235,13 @@ export function EnergyFlowAnimation() {
       {(
         [
           {
-            path: "M 108 151 L 150 250 L 150 265 L 300 265 L 300 240",
+            path: "M 108 151 L 150 250 L 150 265 L 380 265 L 380 220 L 300 220 L 300 225",
             count: 3,
             duration: 4,
             delayBase: 0,
           },
           {
-            path: "M 108 151 L 150 250 L 150 265 L 465 265 L 465 235",
+            path: "M 108 151 L 150 250 L 150 265 L 380 265 L 380 220 L 465 220 L 465 225",
             count: 3,
             duration: 4,
             delayBase: 0.6,
