@@ -8,8 +8,8 @@ export function HeroSection() {
   return (
     <section className="relative isolate overflow-hidden">
       <Image
-        src="https://images.unsplash.com/photo-1518732714860-b62714ce0c59?auto=format&fit=crop&w=1920&q=80"
-        alt="Luftaufnahme eines nordhessischen Dorfs mit Solaranlagen auf Dächern"
+        src="/hero.jpg"
+        alt="Blick auf Niedenstein und das Chattengau"
         fill
         priority
         className="object-cover"
