@@ -5,6 +5,7 @@ import {
   deletePendingConfirmation,
   peekPendingConfirmation,
 } from "@/lib/pending-confirmations-store";
+import { insertWaitlistEntry } from "@/lib/waitlist-store";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,12 @@ async function confirm(token: string | undefined): Promise<Result> {
     await sendOperatorNotificationEmail(payload);
   } catch (err) {
     console.error("[waitlist/confirm] operator mail failed", err);
+    return "send-failed";
+  }
+  try {
+    insertWaitlistEntry(payload, null);
+  } catch (err) {
+    console.error("[waitlist/confirm] db insert failed", err);
     return "send-failed";
   }
   deletePendingConfirmation(token);
