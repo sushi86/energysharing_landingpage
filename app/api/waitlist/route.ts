@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { sendConfirmationEmail } from "@/lib/email";
-import { createPendingConfirmation } from "@/lib/pending-confirmations";
+import { createPendingConfirmation } from "@/lib/pending-confirmations-store";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { waitlistSchema } from "@/lib/validation";
 

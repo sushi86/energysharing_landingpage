@@ -4,7 +4,7 @@ import { sendOperatorNotificationEmail } from "@/lib/email";
 import {
   deletePendingConfirmation,
   peekPendingConfirmation,
-} from "@/lib/pending-confirmations";
+} from "@/lib/pending-confirmations-store";
 
 export const dynamic = "force-dynamic";
 
