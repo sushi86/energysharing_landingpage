@@ -20,16 +20,17 @@ async function confirm(token: string | undefined): Promise<Result> {
   const payload = peekPendingConfirmation(token);
   if (!payload) return "invalid";
   try {
-    await sendOperatorNotificationEmail(payload);
-  } catch (err) {
-    console.error("[waitlist/confirm] operator mail failed", err);
-    return "send-failed";
-  }
-  try {
     insertWaitlistEntry(payload, null);
   } catch (err) {
     console.error("[waitlist/confirm] db insert failed", err);
     return "send-failed";
+  }
+  // DB insert succeeded; operator notification is best-effort — the entry is
+  // visible in /admin/warteliste regardless.
+  try {
+    await sendOperatorNotificationEmail(payload);
+  } catch (err) {
+    console.error("[waitlist/confirm] operator mail failed", err);
   }
   deletePendingConfirmation(token);
   return "ok";

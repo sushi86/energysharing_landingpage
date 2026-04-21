@@ -1,6 +1,7 @@
 import { logAdminAccess } from "@/lib/admin-access-log";
 import { listAdmins } from "@/lib/admin-store";
 import { getSessionEmail } from "@/lib/admin-session";
+import { getClientIpFromHeaders } from "@/lib/client-ip";
 
 import { inviteAdmin, removeAdminAction } from "./actions";
 
@@ -14,7 +15,7 @@ export default async function AdminsPage() {
   const email = await getSessionEmail();
   if (!email) return null;
   const admins = listAdmins();
-  logAdminAccess(email, "view-admins", null);
+  logAdminAccess(email, "view-admins", await getClientIpFromHeaders());
 
   return (
     <div>

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { isAdminEmail } from "@/lib/admin-store";
 import { sendMagicLinkEmail } from "@/lib/admin-email";
+import { getClientIpFromRequest } from "@/lib/client-ip";
 import { signToken } from "@/lib/crypto";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -10,15 +11,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const bodySchema = z.object({ email: z.email().max(254) });
-
-function getClientIp(req: NextRequest): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) {
-    const first = forwarded.split(",")[0]?.trim();
-    if (first) return first;
-  }
-  return req.headers.get("x-real-ip")?.trim() ?? "unknown";
-}
 
 function getBaseUrl(req: NextRequest): string {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -29,7 +21,7 @@ function getBaseUrl(req: NextRequest): string {
 }
 
 export async function POST(req: NextRequest) {
-  const ip = getClientIp(req);
+  const ip = getClientIpFromRequest(req);
   const limit = checkRateLimit(`admin-login:${ip}`);
   if (!limit.allowed) {
     return NextResponse.json(

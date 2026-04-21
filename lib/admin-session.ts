@@ -43,7 +43,3 @@ export async function destroySession(): Promise<void> {
   }
   store.delete("esl_admin_session");
 }
-
-export function sweepExpiredSessions(): void {
-  getDb().prepare("DELETE FROM admin_sessions WHERE expires_at <= ?").run(Date.now());
-}

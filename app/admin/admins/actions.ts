@@ -7,9 +7,20 @@ import { addAdmin, listAdmins, removeAdmin } from "@/lib/admin-store";
 import { logAdminAccess } from "@/lib/admin-access-log";
 import { sendAdminInviteEmail } from "@/lib/admin-email";
 import { getSessionEmail } from "@/lib/admin-session";
+import { getClientIpFromHeaders } from "@/lib/client-ip";
 import { signToken } from "@/lib/crypto";
 
 const inviteSchema = z.object({ email: z.email().max(254) });
+
+function getBaseUrlOrThrow(): string {
+  const url = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (!url) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL ist nicht gesetzt. Admin-Einladungen benötigen eine absolute Basis-URL.",
+    );
+  }
+  return url;
+}
 
 export async function inviteAdmin(formData: FormData): Promise<void> {
   const session = await getSessionEmail();
@@ -18,11 +29,13 @@ export async function inviteAdmin(formData: FormData): Promise<void> {
   if (!parsed.success) return;
   const target = parsed.data.email.trim().toLowerCase();
 
+  const baseUrl = getBaseUrlOrThrow();
+  const ip = await getClientIpFromHeaders();
+
   addAdmin(target, session);
-  logAdminAccess(session, `invite:${target}`, null);
+  logAdminAccess(session, `invite:${target}`, ip);
 
   const token = signToken({ purpose: "invite", email: target }, 24 * 60 * 60 * 1000);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
   const url = `${baseUrl}/api/admin/verify?token=${encodeURIComponent(token)}`;
   await sendAdminInviteEmail(target, session, url);
 
@@ -41,6 +54,6 @@ export async function removeAdminAction(formData: FormData): Promise<void> {
   if (actives.length === 1 && actives[0].email === target) return; // never leave zero admins
 
   removeAdmin(target);
-  logAdminAccess(session, `remove:${target}`, null);
+  logAdminAccess(session, `remove:${target}`, await getClientIpFromHeaders());
   revalidatePath("/admin/admins");
 }

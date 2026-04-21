@@ -1,6 +1,7 @@
 import { logAdminAccess } from "@/lib/admin-access-log";
 import { getSessionEmail } from "@/lib/admin-session";
-import { listWaitlistEntries } from "@/lib/waitlist-store";
+import { getClientIpFromHeaders } from "@/lib/client-ip";
+import { listWaitlistEntries, type WaitlistEntryRow } from "@/lib/waitlist-store";
 
 export const dynamic = "force-dynamic";
 
@@ -8,11 +9,23 @@ function formatDate(ms: number): string {
   return new Date(ms).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" });
 }
 
+function formatDetails(e: WaitlistEntryRow): string {
+  if (e.role === "produzent") {
+    const kwp = e.producerSystemSizeKwp ?? "?";
+    const meter = e.producerSmartMeter ?? "?";
+    return `${kwp} kWp · Smart Meter: ${meter}`;
+  }
+  const kwh = e.consumerYearlyKwh ?? "?";
+  const ev = e.consumerHasEv === null ? "?" : e.consumerHasEv ? "ja" : "nein";
+  const hp = e.consumerHasHeatPump === null ? "?" : e.consumerHasHeatPump ? "ja" : "nein";
+  return `${kwh} kWh/a · EV: ${ev} · WP: ${hp}`;
+}
+
 export default async function AdminWaitlistPage() {
   const email = await getSessionEmail();
   if (!email) return null;
   const entries = listWaitlistEntries();
-  logAdminAccess(email, "view-list", null);
+  logAdminAccess(email, "view-list", await getClientIpFromHeaders());
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -45,11 +58,7 @@ export default async function AdminWaitlistPage() {
                 <td className="px-3 py-2">{e.firstName} {e.lastName}</td>
                 <td className="px-3 py-2"><a className="underline" href={`mailto:${e.email}`}>{e.email}</a></td>
                 <td className="px-3 py-2">{e.ortsteil}</td>
-                <td className="px-3 py-2 text-primary-dark/80">
-                  {e.role === "produzent"
-                    ? `${e.producerSystemSizeKwp} kWp · Smart Meter: ${e.producerSmartMeter}`
-                    : `${e.consumerYearlyKwh} kWh/a · EV: ${e.consumerHasEv ? "ja" : "nein"} · WP: ${e.consumerHasHeatPump ? "ja" : "nein"}`}
-                </td>
+                <td className="px-3 py-2 text-primary-dark/80">{formatDetails(e)}</td>
               </tr>
             ))}
           </tbody>

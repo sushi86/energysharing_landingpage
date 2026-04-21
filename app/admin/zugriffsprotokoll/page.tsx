@@ -1,5 +1,6 @@
 import { listRecentAccess, logAdminAccess } from "@/lib/admin-access-log";
 import { getSessionEmail } from "@/lib/admin-session";
+import { getClientIpFromHeaders } from "@/lib/client-ip";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export default async function AccessLogPage() {
   const email = await getSessionEmail();
   if (!email) return null;
   const entries = listRecentAccess(200);
-  logAdminAccess(email, "view-access-log", null);
+  logAdminAccess(email, "view-access-log", await getClientIpFromHeaders());
   return (
     <div>
       <h1 className="font-serif text-3xl">Zugriffsprotokoll</h1>

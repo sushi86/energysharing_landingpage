@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { logAdminAccess } from "@/lib/admin-access-log";
 import { getSessionEmail } from "@/lib/admin-session";
+import { getClientIpFromHeaders } from "@/lib/client-ip";
 import { countWaitlistEntries } from "@/lib/waitlist-store";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ export default async function AdminHome() {
   const email = await getSessionEmail();
   if (!email) return null; // layout already shows login form
   const count = countWaitlistEntries();
-  logAdminAccess(email, "view-home", null);
+  logAdminAccess(email, "view-home", await getClientIpFromHeaders());
   return (
     <div>
       <h1 className="font-serif text-3xl">Übersicht</h1>

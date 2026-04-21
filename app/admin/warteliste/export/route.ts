@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { logAdminAccess } from "@/lib/admin-access-log";
 import { getSessionEmail } from "@/lib/admin-session";
+import { getClientIpFromRequest } from "@/lib/client-ip";
 import { listWaitlistEntries } from "@/lib/waitlist-store";
 
 export const runtime = "nodejs";
@@ -9,7 +10,10 @@ export const dynamic = "force-dynamic";
 
 function csvEscape(value: string | number | boolean | null): string {
   if (value === null || value === undefined) return "";
-  const s = String(value);
+  // Defuse CSV formula injection: cells starting with =, +, -, @, tab, or CR
+  // are executed as formulas by Excel/LibreOffice/Numbers when the file is opened.
+  // Prefix a single quote so the spreadsheet treats them as literal text.
+  const s = String(value).replace(/^[=+\-@\t\r]/, "'$&");
   if (/[",\n;]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
@@ -24,7 +28,7 @@ export async function GET(req: NextRequest) {
   }
 
   const entries = listWaitlistEntries();
-  logAdminAccess(email, "export-csv", null);
+  logAdminAccess(email, `export-csv:${entries.length}`, getClientIpFromRequest(req));
 
   const header = [
     "confirmed_at",
