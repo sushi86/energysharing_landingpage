@@ -66,3 +66,43 @@ Für die Benachrichtigungs-Mails muss die Absender-Domain in Resend verifiziert 
 - Framer Motion (Section-Reveals, Counter, Accordion, Energy-Flow-SVG)
 - react-hook-form + Zod (`@hookform/resolvers`) für Formulare
 - Resend SDK für Transactional Mail
+
+## Admin-Bereich (Warteliste)
+
+Der Admin-Bereich unter `/admin` zeigt alle bestätigten Wartelisten-Einträge und erlaubt einen CSV-Export. Zugriff nur per Magic-Link — kein Passwort.
+
+### Einmalige Einrichtung
+
+1. Zwei 32-Byte-Keys generieren:
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"  # → ADMIN_DATA_KEY
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"  # → ADMIN_SESSION_SECRET
+   ```
+
+   **Wichtig:** `ADMIN_DATA_KEY` darf nach dem ersten Produktivbetrieb **nie mehr geändert werden**, sonst sind die verschlüsselten Einträge nicht mehr lesbar. Sicher hinterlegen (Passwort-Manager, Infra-Secrets).
+
+2. In `.env.local` (dev) bzw. der Deployment-Umgebung setzen:
+
+   ```
+   ADMIN_BOOTSTRAP_EMAIL=dein-name@example.de
+   ADMIN_DATA_KEY=<64 hex chars>
+   ADMIN_SESSION_SECRET=<64 hex chars>
+   ADMIN_DB_PATH=./data/waitlist.db   # in Prod: /app/data/waitlist.db
+   ```
+
+3. Beim ersten Start wird die `ADMIN_BOOTSTRAP_EMAIL` als aktiver Admin in die DB eingetragen. Weitere Admins werden danach über `/admin/admins` per E-Mail-Einladung hinzugefügt — kein Deploy nötig.
+
+### Daten-Volume in Docker
+
+`compose.yaml` mountet ein benanntes Volume `waitlist_data` nach `/app/data`. Die SQLite-Datei liegt dort und überlebt Container-Neustarts und Image-Updates. Backups: Volume regelmäßig sichern und **verschlüsselt** ablegen — die DB-Datei enthält verschlüsselte PII, aber kombiniert mit einem kompromittierten `ADMIN_DATA_KEY` wäre sie lesbar.
+
+### Login
+
+1. `/admin` öffnen → E-Mail-Adresse eingeben → Magic-Link-Mail folgen.
+2. Session gilt 8 Stunden. Logout über den Link im Header.
+
+### Aufbewahrung
+
+- Zugriffsprotokoll wird automatisch nach 90 Tagen rotiert.
+- Wartelisten-Einträge werden nicht automatisch gelöscht (manuelles Löschen nur per DB-Eingriff).
