@@ -2,7 +2,7 @@
 
 FROM node:22-alpine AS deps
 WORKDIR /app
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat python3 make g++
 COPY package.json package-lock.json* ./
 RUN --mount=type=cache,target=/root/.npm \
     if [ -f package-lock.json ]; then npm ci; else npm install; fi
@@ -23,6 +23,9 @@ ENV HOSTNAME=0.0.0.0
 
 RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 nextjs
+
+RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
+VOLUME /app/data
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

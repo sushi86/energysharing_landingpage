@@ -12,10 +12,19 @@ services:
       WAITLIST_TO_EMAIL: ${WAITLIST_TO_EMAIL}
       WAITLIST_FROM_EMAIL: ${WAITLIST_FROM_EMAIL}
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL}
+      ADMIN_DATA_KEY: ${ADMIN_DATA_KEY}
+      ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET}
+      ADMIN_DB_PATH: /app/data/waitlist.db
+    volumes:
+      - waitlist_data:/app/data
     expose:
       - "3000"
     networks:
       - npm_default
+
+volumes:
+  waitlist_data:
 
 networks:
   npm_default:
