@@ -482,6 +482,19 @@ export function CalculatorSection() {
                   {fmtEuro.format(Math.abs(jahrVerbrauch))} € / Jahr{" "}
                   {jahrVerbrauch >= 0 ? "gespart" : "mehr"}
                 </div>
+                {reduktion === 0 && jahrVerbrauch < 50 && (
+                  <div className="mt-4 flex gap-3 rounded-lg bg-sun-light/15 p-3 text-xs leading-relaxed text-primary-pale ring-1 ring-sun-light/30">
+                    <span aria-hidden className="text-sun-light">💡</span>
+                    <span>
+                      Energy Sharing lohnt sich für Verbraucher vor allem dann
+                      richtig, wenn die <strong>Netzentgelte reduziert</strong>{" "}
+                      werden. Das ergibt auch Sinn: Wird der Strom lokal
+                      verbraucht, werden die Netze weniger beansprucht und
+                      müssen weniger stark ausgebaut werden. Genau das soll die
+                      Bundesnetzagentur in Deutschland noch festlegen.
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
