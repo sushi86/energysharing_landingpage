@@ -60,6 +60,13 @@ function runMigrations(db: DB): void {
     );
 
     CREATE INDEX IF NOT EXISTS idx_admin_access_log_at ON admin_access_log(at);
+
+    CREATE TABLE IF NOT EXISTS consumed_tokens (
+      jti TEXT PRIMARY KEY,
+      expires_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_consumed_tokens_expires_at ON consumed_tokens(expires_at);
   `);
 }
 

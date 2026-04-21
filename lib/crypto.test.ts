@@ -30,7 +30,19 @@ test("decryptField rejects tampered ciphertext", () => {
 test("signToken → verifyToken round-trips and carries payload", () => {
   const token = signToken({ purpose: "login", email: "x@y.z" }, 60_000);
   const verified = verifyToken(token);
-  assert.deepEqual(verified, { purpose: "login", email: "x@y.z" });
+  assert.equal(verified?.purpose, "login");
+  assert.equal(verified?.email, "x@y.z");
+  assert.equal(typeof verified?.jti, "string");
+  assert.ok((verified?.jti.length ?? 0) >= 16);
+  assert.equal(typeof verified?.expiresAt, "number");
+});
+
+test("signToken produces a unique jti per call", () => {
+  const t1 = signToken({ purpose: "login", email: "x@y.z" }, 60_000);
+  const t2 = signToken({ purpose: "login", email: "x@y.z" }, 60_000);
+  const v1 = verifyToken(t1);
+  const v2 = verifyToken(t2);
+  assert.notEqual(v1?.jti, v2?.jti);
 });
 
 test("verifyToken returns null for expired token", async () => {

@@ -40,17 +40,23 @@ export function decryptField(ciphertext: string): string {
 
 type TokenPayload = { purpose: "login" | "invite"; email: string };
 
-type SignedToken = { p: TokenPayload; e: number };
+export type VerifiedToken = TokenPayload & { jti: string; expiresAt: number };
+
+type SignedToken = { p: TokenPayload; e: number; j: string };
 
 export function signToken(payload: TokenPayload, ttlMs: number): string {
   const key = getKey("ADMIN_SESSION_SECRET", 32);
-  const body: SignedToken = { p: payload, e: Date.now() + ttlMs };
+  const body: SignedToken = {
+    p: payload,
+    e: Date.now() + ttlMs,
+    j: randomBytes(16).toString("base64url"),
+  };
   const json = Buffer.from(JSON.stringify(body), "utf8").toString("base64url");
   const mac = createHmac("sha256", key).update(json).digest("base64url");
   return `${json}.${mac}`;
 }
 
-export function verifyToken(token: string): TokenPayload | null {
+export function verifyToken(token: string): VerifiedToken | null {
   const key = getKey("ADMIN_SESSION_SECRET", 32);
   const [json, mac] = token.split(".");
   if (!json || !mac) return null;
@@ -65,9 +71,10 @@ export function verifyToken(token: string): TokenPayload | null {
     return null;
   }
   if (typeof parsed.e !== "number" || parsed.e <= Date.now()) return null;
+  if (typeof parsed.j !== "string" || parsed.j.length === 0) return null;
   if (!parsed.p || (parsed.p.purpose !== "login" && parsed.p.purpose !== "invite")) return null;
   if (typeof parsed.p.email !== "string") return null;
-  return parsed.p;
+  return { purpose: parsed.p.purpose, email: parsed.p.email, jti: parsed.j, expiresAt: parsed.e };
 }
 
 export function generateSessionId(): string {
