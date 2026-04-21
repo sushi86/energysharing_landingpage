@@ -52,6 +52,15 @@ export function BenefitsSection() {
             </div>
           </SectionReveal>
         </div>
+
+        <SectionReveal delay={0.3}>
+          <div className="mx-auto mt-10 max-w-3xl rounded-2xl bg-white p-6 ring-1 ring-primary-pale">
+            <h3 className="font-serif text-lg text-primary-dark">Was ist „die Plattform"?</h3>
+            <p className="mt-2 text-muted">
+              Das, was wir gerade aufbauen — und mit deiner Anmeldung möglich machen. Sie bringt Erzeuger und Verbraucher in der Gemeinde zusammen, übernimmt die monatliche Abrechnung und tauscht automatisch die nötigen Daten mit dem Netzbetreiber (EAM) aus. So musst du dich um nichts kümmern.
+            </p>
+          </div>
+        </SectionReveal>
       </div>
     </section>
   );
