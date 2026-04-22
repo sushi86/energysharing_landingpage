@@ -23,7 +23,10 @@ const VERBRAUCH_MAX = 10000;
 const VERBRAUCH_DEFAULT = 6000;
 const VERBRAUCH_STEP = 100;
 
-const ABDECKUNG_ANTEIL = 0.3;
+const ABDECKUNG_MIN = 30;
+const ABDECKUNG_MAX = 80;
+const ABDECKUNG_DEFAULT = 30;
+const ABDECKUNG_STEP = 1;
 
 // TODO: Link ggf. auf spezifische BNetzA-Konsultationsseite aktualisieren,
 // sobald diese existiert. Aktuell Homepage als verifizierter Fallback.
@@ -49,17 +52,17 @@ const REDUKTIONS_STUFEN: ReduktionsStufe[] = [
   {
     value: 28,
     label: "28 % Reduktion",
-    subLabel: "Österreich — selbes Umspannwerk",
+    subLabel: "Österreich — Nachbardorf",
     description:
-      "Sharing-Partner hängen am selben Umspannwerk, aber an verschiedenen Trafostationen (Beispiel: Niedenstein ↔ Kirchberg).",
+      "Sharing-Partner wohnen im Nachbarort (Beispiel: Niedenstein ↔ Kirchberg). Technisch: gemeinsames Umspannwerk, aber unterschiedliche Trafostationen.",
     badge: "AT",
   },
   {
     value: 64,
     label: "64 % Reduktion",
-    subLabel: "Österreich — selbe Trafostation",
+    subLabel: "Österreich — selbe Straße",
     description:
-      "Direkte Nachbarschaft bzw. selbe Straße — Sharing-Partner hängen an derselben Trafostation.",
+      "Direkte Nachbarschaft in derselben Straße. Technisch: Sharing-Partner hängen an derselben Trafostation.",
     badge: "AT",
   },
 ];
@@ -84,8 +87,8 @@ function ersparnisProzent(preis: number): number {
   return ((MARKTPREIS - preis) / MARKTPREIS) * 100;
 }
 
-function jahresersparnisVerbraucher(preis: number, kWh: number): number {
-  return ((MARKTPREIS - preis) * kWh * ABDECKUNG_ANTEIL) / 100;
+function jahresersparnisVerbraucher(preis: number, kWh: number, anteil: number): number {
+  return ((MARKTPREIS - preis) * kWh * anteil) / 100;
 }
 
 function jahresmehrertragProduzent(einspeise: number, kWh: number): number {
@@ -105,22 +108,53 @@ const fmtEuro = new Intl.NumberFormat("de-DE", {
 });
 const fmtKwh = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
 
+function CountryFlag({ country }: { country: "AT" | "DE" }) {
+  const title = country === "AT" ? "Österreich" : "Deutschland";
+  return (
+    <svg
+      aria-label={title}
+      role="img"
+      viewBox="0 0 3 2"
+      className="h-2.5 w-[15px] shrink-0 rounded-[1px] ring-1 ring-black/10"
+      preserveAspectRatio="none"
+    >
+      <title>{title}</title>
+      {country === "AT" ? (
+        <>
+          <rect width="3" height="2" fill="#ED2939" />
+          <rect y="0.6667" width="3" height="0.6667" fill="#FFFFFF" />
+        </>
+      ) : (
+        <>
+          <rect width="3" height="0.6667" fill="#000000" />
+          <rect y="0.6667" width="3" height="0.6667" fill="#DD0000" />
+          <rect y="1.3333" width="3" height="0.6667" fill="#FFCE00" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export function CalculatorSection() {
   const [einspeiseverguetung, setEinspeiseverguetung] = useState(EINSPEISUNG_DEFAULT);
   const [einspeisemenge, setEinspeisemenge] = useState(EINSPEISEMENGE_DEFAULT);
   const [verbrauch, setVerbrauch] = useState(VERBRAUCH_DEFAULT);
   const [reduktion, setReduktion] = useState<0 | 28 | 64>(0);
+  const [abdeckungPct, setAbdeckungPct] = useState(ABDECKUNG_DEFAULT);
 
   const sliderId = useId();
   const einspeisemengeId = useId();
   const verbrauchId = useId();
   const radioGroupId = useId();
+  const abdeckungId = useId();
+
+  const abdeckungAnteil = abdeckungPct / 100;
 
   const preis = verbraucherpreis(einspeiseverguetung, reduktion);
   const mehrertrag = mehrertragProzent(einspeiseverguetung);
   const mehrertragMarkt = mehrertragMarktwertProzent(einspeiseverguetung);
   const ersparnis = ersparnisProzent(preis);
-  const jahrVerbrauch = jahresersparnisVerbraucher(preis, verbrauch);
+  const jahrVerbrauch = jahresersparnisVerbraucher(preis, verbrauch, abdeckungAnteil);
   const jahrProduktion = jahresmehrertragProduzent(einspeiseverguetung, einspeisemenge);
   const jahrProduktionMarkt = jahresmehrertragProduzentMarktwert(einspeiseverguetung, einspeisemenge);
 
@@ -223,6 +257,10 @@ export function CalculatorSection() {
               <h3 className="mt-1 font-serif text-xl text-primary-dark">
                 Reduktion der Netzentgelte
               </h3>
+              <p className="mt-2 text-sm text-muted">
+                Je näher Erzeuger und Verbraucher beieinander liegen, desto
+                stärker kann das Netzentgelt reduziert werden.
+              </p>
 
               <fieldset className="mt-6">
                 <legend className="sr-only">Reduktionsstufe auswählen</legend>
@@ -250,13 +288,14 @@ export function CalculatorSection() {
                           className="sr-only"
                         />
                         <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                             stufe.badge === "AT"
                               ? "bg-sun-light text-sun"
                               : "bg-white text-primary-dark ring-1 ring-primary-dark/10"
                           }`}
                         >
-                          {stufe.badge === "AT" ? "🇦🇹 AT" : "🇩🇪 DE"}
+                          <CountryFlag country={stufe.badge} />
+                          {stufe.badge}
                         </span>
                         <span
                           className={`font-serif text-xl font-bold leading-none ${selected ? "text-primary-dark" : "text-ink"}`}
@@ -339,8 +378,7 @@ export function CalculatorSection() {
                       i
                     </span>
                     <span className="underline underline-offset-2 decoration-primary/40">
-                      Warum rechnen wir nur mit{" "}
-                      {Math.round(ABDECKUNG_ANTEIL * 100)} % Sharing-Anteil?
+                      Warum rechnen wir nur mit 30 % Sharing-Anteil?
                     </span>
                     <span className="text-primary transition group-open:rotate-90" aria-hidden>
                       ▸
@@ -348,10 +386,36 @@ export function CalculatorSection() {
                   </summary>
                   <div className="mt-2 rounded-lg bg-primary-pale/50 p-3 text-xs leading-relaxed text-primary-dark/80">
                     Sonne scheint nicht rund um die Uhr — realistisch lassen sich ohne
-                    Speicher ca. {Math.round(ABDECKUNG_ANTEIL * 100)} % deines
-                    Jahresverbrauchs direkt über Sharing abdecken. Der Rest läuft
-                    weiter über deinen regulären Tarif. Mit zukünftigen
-                    Speicherlösungen wird dieser Anteil steigen.
+                    Speicher ca. 30 % deines Jahresverbrauchs direkt über Sharing
+                    abdecken. Der Rest läuft weiter über deinen regulären Tarif.
+                    Mit zukünftigen Speicherlösungen wird dieser Anteil steigen —
+                    probier’s aus:
+
+                    <div className="mt-3">
+                      <div className="flex items-baseline justify-between">
+                        <label htmlFor={abdeckungId} className="text-xs text-primary-dark/80">
+                          Sharing-Anteil
+                        </label>
+                        <div className="font-serif text-base font-bold text-primary-dark">
+                          {abdeckungPct} %
+                        </div>
+                      </div>
+                      <input
+                        id={abdeckungId}
+                        type="range"
+                        min={ABDECKUNG_MIN}
+                        max={ABDECKUNG_MAX}
+                        step={ABDECKUNG_STEP}
+                        value={abdeckungPct}
+                        onChange={(e) => setAbdeckungPct(parseInt(e.target.value, 10))}
+                        aria-valuetext={`${abdeckungPct} Prozent Sharing-Anteil`}
+                        className="mt-2 w-full accent-primary"
+                      />
+                      <div className="mt-1 flex justify-between text-[10px] text-primary-dark/60">
+                        <span>{ABDECKUNG_MIN} %</span>
+                        <span>{ABDECKUNG_MAX} %</span>
+                      </div>
+                    </div>
                   </div>
                 </details>
               </div>
@@ -475,16 +539,33 @@ export function CalculatorSection() {
                   </span>
                 </div>
                 <div className="mt-4 text-sm text-primary-pale/80">
-                  Bei {fmtKwh.format(verbrauch)} kWh Verbrauch ({Math.round(ABDECKUNG_ANTEIL * 100)} % via Sharing)
+                  Bei {fmtKwh.format(verbrauch)} kWh Verbrauch ({abdeckungPct} % via Sharing)
                 </div>
                 <div className="font-serif text-2xl font-bold">
                   {jahrVerbrauch >= 0 ? "" : "−"}
                   {fmtEuro.format(Math.abs(jahrVerbrauch))} € / Jahr{" "}
                   {jahrVerbrauch >= 0 ? "gespart" : "mehr"}
                 </div>
+                {reduktion > 0 && (
+                  <div className="mt-4 flex gap-3 rounded-lg bg-primary-light/25 p-4 text-sm leading-relaxed text-white shadow-lg ring-2 ring-primary-light">
+                    <span aria-hidden className="text-lg text-primary-pale">✅</span>
+                    <span>
+                      Genau so macht es <strong>Österreich</strong> vor: Energy
+                      Sharing lohnt sich dort für <strong>beide Seiten</strong>{" "}
+                      — Verbraucher sparen, Erzeuger bekommen mehr als die
+                      Einspeisevergütung, und die Netze werden entlastet.
+                      <span className="mt-2 block">
+                        Lasst uns dieses Pilotprojekt in Niedenstein und im
+                        Chattengau gemeinsam durchziehen und politischen Druck
+                        aufbauen, damit auch wir in Deutschland von dieser
+                        Reduktion profitieren.
+                      </span>
+                    </span>
+                  </div>
+                )}
                 {reduktion === 0 && jahrVerbrauch < 50 && (
-                  <div className="mt-4 flex gap-3 rounded-lg bg-sun-light/15 p-3 text-xs leading-relaxed text-primary-pale ring-1 ring-sun-light/30">
-                    <span aria-hidden className="text-sun-light">💡</span>
+                  <div className="mt-4 flex gap-3 rounded-lg bg-sun/25 p-4 text-sm leading-relaxed text-white shadow-lg ring-2 ring-sun">
+                    <span aria-hidden className="text-lg text-sun-light">⚠️</span>
                     <span>
                       Energy Sharing lohnt sich für Verbraucher vor allem dann
                       richtig, wenn die <strong>Netzentgelte reduziert</strong>{" "}
@@ -492,6 +573,13 @@ export function CalculatorSection() {
                       verbraucht, werden die Netze weniger beansprucht und
                       müssen weniger stark ausgebaut werden. Genau das soll die
                       Bundesnetzagentur in Deutschland noch festlegen.
+                      <span className="mt-2 block">
+                        Als Gemeinde können wir hier gemeinsam{" "}
+                        <strong>politisches Gewicht in die Waagschale werfen</strong>{" "}
+                        und uns dafür einsetzen, dass die Bundesnetzagentur – wie
+                        bereits in Österreich umgesetzt – reduzierte Netzentgelte
+                        für lokal geteilten Strom zulässt.
+                      </span>
                     </span>
                   </div>
                 )}
